@@ -25,9 +25,11 @@ class GHFilter:
         :param dt: difference in time between previous update step and current update step
         :return: nothing; use get_estimation() to get the estimated value
         """
+        # predict
         predicted_val = self._estimated_val + self._estimated_rate * dt
         predicted_rate = self._estimated_rate
 
+        # update
         residual = measured_val - predicted_val
         self._estimated_rate = predicted_rate + self.h * residual / dt
         self._estimated_val = predicted_val + self.g * residual
