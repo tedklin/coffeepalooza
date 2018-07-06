@@ -12,13 +12,13 @@ class BayesFilter:
         self._known_map = known_map
         self._likelihood = np.ones(len(self.known_map))
 
-    def update(self, movement, kernel, landmark_detected, landmark_probability):
+    def update(self, movement, kernel, measurement, measurement_accuracy):
         """
         Update the filter with new sensor readings.
-        :param movement: sensor reading for relative movement from last update
-        :param kernel: represents the noise in the relative movement sensor
-        :param landmark_detected: sensor reading for absolute location using landmarks
-        :param landmark_probability: the probability (0 <= measurement_prob < 1) that the landmark detection is correct
+        :param movement: prediction for relative movement from last update
+        :param kernel: represents the uncertainty in prediction
+        :param measurement: sensor reading for absolute positioning
+        :param measurement_accuracy: the probability (0 <= measurement_prob < 1) that the landmark detection is correct
         :return:
         """
 
@@ -28,12 +28,12 @@ class BayesFilter:
         prior = filters.convolve(np.roll(self._belief, movement), kernel, mode='wrap')
 
         # compute likelihood
-        if landmark_probability >= 1:
-            landmark_probability = 0.9999
-        elif landmark_probability < 0:
-            landmark_probability = 0
-        scale = landmark_probability / (1 - landmark_probability)
-        self._likelihood[self._known_map == landmark_detected] *= scale
+        if measurement_accuracy >= 1:
+            measurement_accuracy = 0.9999
+        elif measurement_accuracy < 0:
+            measurement_accuracy = 0
+        scale = measurement_accuracy / (1 - measurement_accuracy)
+        self._likelihood[self._known_map == measurement] *= scale
 
         # update step
         posterior = normalize(self._likelihood * prior)
