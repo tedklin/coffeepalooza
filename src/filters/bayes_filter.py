@@ -36,8 +36,8 @@ class BayesFilter:
 
         # update step
         self._likelihood[self._known_map == measurement] *= scale
-        posterior = normalize(self._likelihood * prior)
-        self._belief = posterior
+        posterior = self._likelihood * prior
+        self._belief = normalize(posterior)
 
     def get_belief(self):
         return self._belief
