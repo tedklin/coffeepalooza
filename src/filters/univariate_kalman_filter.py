@@ -4,6 +4,45 @@ import time
 from util.caffeinated_math import Gaussian
 
 
+class UnivariateKalmanFilter:
+    """General form of a univariate Kalman filter on a single state."""
+
+    def __init__(self, initial_belief):
+        """
+        :param initial_belief: represented by a Gaussian object
+        """
+        self._x = initial_belief.get_mean()
+        self._P = initial_belief.get_variance()
+        self._time = time.perf_counter()
+
+    def update(self, velocity, process_variance, measurement, sensor_variance):
+        """
+        Update the Kalman filter with predicted movement and sensor measurement
+        :param velocity:
+        :param process_variance:
+        :param measurement:
+        :param sensor_variance:
+        :return:
+        """
+        # predict step using a really simple model (dx = vel * dt)
+        dt = time.perf_counter() - self._time
+        dx = velocity * dt
+        Q = process_variance * dt
+        self._x += dx
+        self._P += Q
+
+        # update step
+        z = measurement
+        R = sensor_variance
+        y = z - self._x  # residual
+        K = self._P / (self._P + R)  # Kalman gain
+        self._x += K * y
+        self._P *= (1 - K)
+
+    def get_estimate(self):
+        return self._x
+
+
 class BayesianUnivariateKalmanFilter:
     """Derived from Bayesian principles"""
 
@@ -25,7 +64,7 @@ class BayesianUnivariateKalmanFilter:
         :param sensor_variance:
         :return:
         """
-        # predict step using a really simple model (dx = vel * dt)
+        # predict step
         dt = time.perf_counter() - self._time
         self._movement.set_mean(velocity * dt)
         self._movement.set_variance(process_variance * dt)
