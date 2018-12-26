@@ -22,7 +22,7 @@ class UnivariateKalmanFilter:
 
     def update(self, measurement, dt):
         """
-        Update the Kalman filter with predicted movement and sensor measurement
+        Update the Kalman filter with control input movement and sensor measurement
         :param velocity:
         :param process_variance:
         :param measurement:
@@ -66,7 +66,7 @@ class BayesianUnivariateKalmanFilter:
 
     def update(self, measurement, dt):
         """
-        Update the Kalman filter with predicted movement and sensor measurement
+        Update the Kalman filter with control input movement and sensor measurement
         :param velocity:
         :param process_variance:
         :param measurement:
